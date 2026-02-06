@@ -18,7 +18,9 @@ on:
     - '.github/workflows/sentinel-deploy-ed73377a-0fb3-4e3c-bece-3b93390ed59f.yml'
 
 jobs:
-  convert-yaml-to-arm:  
+  convert-yaml-to-arm:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest  
     name: Build ARM Analytic Rules from YAML
     steps:  
