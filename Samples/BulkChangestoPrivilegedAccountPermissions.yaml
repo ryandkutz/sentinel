@@ -19,6 +19,7 @@ relevantTechniques:
   - T1078.004
 tags:
   - AADSecOpsGuide
+
 query: |
   let AdminRecords = AuditLogs
   | where Category =~ "RoleManagement"
@@ -50,6 +51,7 @@ query: |
   | extend InitiatingIpAddress = tostring(iff(isnotempty(InitiatedBy.user.ipAddress), InitiatedBy.user.ipAddress, InitiatedBy.app.ipAddress))
   | extend TargetName = tostring(split(TargetUserPrincipalName,'@',0)[0]), TargetUPNSuffix = tostring(split(TargetUserPrincipalName,'@',1)[0])
   | extend InitiatingAccountName = tostring(split(InitiatingUserPrincipalName, "@")[0]), InitiatingAccountUPNSuffix = tostring(split(InitiatingUserPrincipalName, "@")[1])
+  
 entityMappings:
   - entityType: Account
     fieldMappings:
