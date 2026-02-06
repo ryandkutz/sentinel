@@ -4,7 +4,8 @@ on:
     branches: [working]
     paths:
       - Samples/**
-
+permissions:
+  contents: write
 jobs:
   template:
     name: YamlTo-ARM
@@ -17,3 +18,16 @@ jobs:
         with:
           filesPath: ./Samples
           outputPath: ./Analytics
+      - name: Commit and push changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add Analytics
+
+          # Don't fail if nothing changed
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+
+          git commit -m "Automated: Convert YAML -> ARM"
+          git push
