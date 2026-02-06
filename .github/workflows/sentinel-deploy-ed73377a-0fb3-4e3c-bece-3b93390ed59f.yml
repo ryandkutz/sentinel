@@ -19,30 +19,8 @@ on:
 
 
 jobs:
-  convert-yaml-to-arm:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Convert rules to ARM
-        shell: pwsh
-        run: |
-          Install-Module SentinelARConverter -AcceptLicense -Force
-          Get-ChildItem -Path 'Analytics' -Filter '*.yaml' | ForEach-Object {
-            Convert-SentinelARYamlToArm -Filename $_.FullName -UseOriginalFilename
-          }
-
-      - name: Upload generated ARM
-        uses: actions/upload-artifact@v4
-        with:
-          name: sentinel-arm
-          path: Analytics/**/*.json
-
   deploy-content:
     runs-on: windows-latest
-    needs: convert-yaml-to-arm
     env:
       resourceGroupName: 'rg-sentinel'
       workspaceName: 'sentinel-logs'
@@ -61,12 +39,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Download generated ARM
-      uses: actions/download-artifact@v4
-      with:
-        name: sentinel-arm
-        path: Analytics
 
     - name: Login to Azure (Attempt 1)
       continue-on-error: true
