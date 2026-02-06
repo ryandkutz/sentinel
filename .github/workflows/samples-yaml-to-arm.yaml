@@ -1,7 +1,7 @@
 name: samples-yaml-to-arm
 on:
   push:
-    branches: [working]
+    branches: [main]
     paths:
       - Samples/**
   workflow_dispatch:
@@ -21,6 +21,7 @@ jobs:
           Get-ChildItem -Path 'Samples' -Filter '*.yaml' | ForEach-Object {
             Convert-SentinelARYamlToArm -Filename $_.FullName -UseOriginalFilename
           }
+          Move-Item -Path ".\Samples\*.json" -Destination ".\Analytics\"
       - name: Commit and push changes
         shell: bash
         run: |
