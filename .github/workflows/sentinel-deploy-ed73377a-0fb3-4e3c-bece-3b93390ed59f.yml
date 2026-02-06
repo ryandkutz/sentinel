@@ -18,8 +18,33 @@ on:
     - '.github/workflows/sentinel-deploy-ed73377a-0fb3-4e3c-bece-3b93390ed59f.yml'
 
 jobs:
+  convert-yaml-to-arm:  
+    runs-on: ubuntu-latest  
+    name: Build ARM Analytic Rules from YAML
+    steps:  
+      - uses: actions/checkout@v3  
+      - name: Convert rules to ARM  
+        run: |  
+          Install-Module SentinelARConverter -AcceptLicense -Force  
+          Get-ChildItem -Path 'Analytics' -Filter '*.yaml' | ForEach-Object {  
+              Write-Output "Processing file: $($_.Name)"  
+              $jsonFilePath = $_.FullName.Replace('.yaml', '.json')  
+              if (-not (Test-Path $jsonFilePath) -or (Get-Item $jsonFilePath).LastWriteTime -lt $_.LastWriteTime) {  
+                  Write-Host "Converting $($_.FullName) to $jsonFilePath"  
+                  Convert-SentinelARYamlToArm -Filename $_.FullName -UseOriginalFilename  
+              }  
+          }  
+        shell: pwsh  
+      - name: Commit and push changes  
+        run: |  
+          git config --global user.name 'ryandkutz'  
+          git config --global user.email 'ryandkutz@gmail.com'  
+          git add Analytics  
+          git commit -am "SentinelARConverter"  
+          git push
   deploy-content:
     runs-on: windows-latest
+    needs: convert-yaml-to-arm
     env:
       resourceGroupName: 'rg-sentinel'
       workspaceName: 'sentinel-logs'
