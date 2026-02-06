@@ -1,0 +1,19 @@
+name: samples-yaml-to-arm
+on:
+  push:
+    branches: [working]
+    paths:
+      - Samples/**
+
+jobs:
+  template:
+    name: YamlTo-ARM
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: SecureHats template
+        uses: SecureHats/YamlTo-Arm@v0.1.7
+        with:
+          filesPath: ./Samples
+          outputPath: ./Analytics
