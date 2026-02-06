@@ -13,12 +13,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
-      - name: SecureHats template
-        uses: SecureHats/YamlTo-Arm@v0.1.7
-        with:
-          filesPath: ./Samples
-          outputPath: ./Analytics
+        uses: actions/checkout@v4
+      - name: Convert rules to ARM
+        shell: pwsh
+        run: |
+          Install-Module SentinelARConverter -AcceptLicense -Force
+          Get-ChildItem -Path 'Samples' -Filter '*.yaml' | ForEach-Object {
+            Convert-SentinelARYamlToArm -Filename $_.FullName -UseOriginalFilename
+          }
       - name: Commit and push changes
         shell: bash
         run: |
